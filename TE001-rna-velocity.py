@@ -40,14 +40,19 @@ print("counts contains the counts for the TE001 dataset")
 pa_h5ad = h5ad_path + "TE001-subnetworks-one-signature-seurat-viper-analysis-with-metacell-data-with-paneth.h5ad"
 pa = scv.read(pa_h5ad) # load in object
 
+# a.6) load metadata for TE001 
+metadata_csv = h5ad_path + "TE001-metadata-umap-and-clusters-for-paper.csv"
+metadata = pd.read_csv(metadata_csv)
+
+cells_to_analyze = metadata['cell_id'] # cells to analyze
+
+counts = counts[counts.obs_names.isin(cells_to_analyze)] # subset cells to analyze
+pa = pa[pa.obs_names.isin(cells_to_analyze)] # subset cells to analyze
+
 
 # a.6) merge loom file with protein activity adata object
 adata = scv.utils.merge(counts,ldata)
 
-
-# a.7) load metadata for TE001 
-metadata_csv = h5ad_path + "TE001-metadata-ingest-with-cluster-ids-with-paneth-cluster.csv"
-metadata = pd.read_csv(metadata_csv)
 
 # a.8) process metadata in adata
 specified_columns = ["cell_id", "nCount_RNA", "nFeature_RNA", "mt_percent", "cytotrace_score.ges",
@@ -60,7 +65,7 @@ adata.obs = pd.merge(adata.obs, metadata, on='cell_id', how='left') # merge meta
 adata.obs['seurat_clusters'] = adata.obs['seurat_clusters'].astype('category') # clusters as categorical variable
 
 # a.7) set UMAP coordinates to those obtained at protein activty
-umap_coordinates = np.array(adata.obs.loc[:, ['UMAP_1','UMAP_2','UMAP_3']]) 
+umap_coordinates = np.array(adata.obs.loc[:, ['UMAP_1_scanpy','UMAP_2_scanpy']]) 
 
 adata.obsm['X_umap'] = umap_coordinates
 
@@ -108,13 +113,13 @@ scv.tl.velocity_graph(adata) # generate velocity_graph and add it to layer
 # c.3) Project the velocities onto the embedding
 # --as streamlines
 velocity_streamline_fig = figures_dir + "velocity_streamline.pdf"
-scv.pl.velocity_embedding_stream(adata,basis='umap', color='seurat_clusters', 
+scv.pl.velocity_embedding_stream(adata,basis='umap', color='iter_cluster_id_with_paneth', 
                                  save=velocity_streamline_fig, show=False)
 
 # --as fine grain velocity embedding
 velocity_fine_grain_fig = figures_dir + "velocity_fine_grain.pdf"
 scv.pl.velocity_embedding(adata, arrow_length=3, arrow_size=1.5, 
-                          dpi=120, color='seurat_clusters',
+                          dpi=120, color='iter_cluster_id_with_paneth',
                           save=velocity_fine_grain_fig, show=False)
 
 

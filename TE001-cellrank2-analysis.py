@@ -22,7 +22,25 @@ warnings.simplefilter("ignore", category=UserWarning)
 counts_h5ad = h5ad_path + "TE001-counts.h5ad"
 adata = sc.read_h5ad(counts_h5ad) # load in object
 
+
+# a.4) load metadata for TE001 
+metadata_csv = h5ad_path + "TE001-metadata-umap-and-clusters-for-paper.csv"
+metadata = pd.read_csv(metadata_csv)
+
+# a.5) process metadata in adata
+specified_columns = ["cell_id", "nCount_RNA", "nFeature_RNA", "mt_percent", "cytotrace_score.ges",
+                     "cytotrace_gcs.ges", "S.Score", "G2M.Score", "Phase", "seurat_clusters", "singleR_labels", "stemness_index.ges"]
+
+adata.obs = adata.obs[specified_columns]
+adata.obs = pd.merge(adata.obs, metadata, on='cell_id', how='left') # merge metadata and include into counts object
+ 
 adata.obs['seurat_clusters'] = adata.obs['seurat_clusters'].astype('category') # clusters as categorical variable
+
+# a.6) set UMAP coordinates to those obtained at protein activty
+umap_coordinates = np.array(adata.obs.loc[:, ['UMAP_1_scanpy','UMAP_2_scanpy']]) 
+
+adata.obsm['X_umap'] = umap_coordinates
+
 
 
 print("adata contains the counts for the TE001 dataset")
@@ -34,7 +52,7 @@ print("adata contains the counts for the TE001 dataset")
 ### b) Preprocess the data and UMAP visualization
 sc.tl.pca(adata, random_state=0)
 sc.pp.neighbors(adata, random_state=0)
-sc.pl.umap(adata, color=["seurat_clusters","singleR_labels","cytotrace_score.ges","stemness_index.ges"])
+sc.pl.umap(adata, color=["seurat_clusters","singleR_labels","cytotrace","stemness_index"])
 
 #####################
 
@@ -76,12 +94,15 @@ ctk.plot_random_walks(
     legend_loc="right",
     dpi=100,
     save=ctk_rw_figure,
-    show=False
 )
 
 # c.4) visualize the transition matrix
-differentiation_figure = figures_dir + "CytoTRACE_differentiation.pdf"
+differentiation_figure = figures_dir + "CytoTRACE_differentiation_ges_clusters.pdf"
 ctk.plot_projection(basis="umap", color="seurat_clusters", 
+                    legend_loc="right", save=differentiation_figure, show=False)
+
+differentiation_figure = figures_dir + "CytoTRACE_differentiation_pa_clusters.pdf"
+ctk.plot_projection(basis="umap", color="iter_cluster_id_with_paneth", 
                     legend_loc="right", save=differentiation_figure, show=False)
 
 # c.5) 
