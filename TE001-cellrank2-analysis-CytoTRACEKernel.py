@@ -1,15 +1,9 @@
 python3
+
 ### a) Import packages and data
-# a.1) setup path to data-containing folder and savings and parameters
+# a.1) setup path to data-containing folder and savings
 h5ad_path = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/TE001-h5ad/"
 figures_dir = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/figures/"
-
-terminal_macrostates_mode = "preset" # "preset" or "unsupervised"; whether to set terminal states a priori or to 
-
-print(" 'terminal_macrostates_mode' set to: " + terminal_macrostates_mode)
-
-n_macro_CytoTRACE = 7 # number of macrostates 
-n_macro_Connectivity= 7 # number of macrostates
 # a.2) packages
 import sys
 import cellrank as cr
@@ -66,24 +60,18 @@ log_expression = adata.copy()
 sc.pp.normalize_total(log_expression, target_sum=1e4)
 sc.pp.log1p(log_expression)
 
-print("UMAP showing Lgr4 and Lgr5 expression")
-sc.pl.umap(log_expression,color=["Lgr4","Lgr5"], use_raw=False, cmap='viridis',add_outline=True, show=False)
+sc.pl.umap(log_expression,color=["Lgr4","Lgr5"], use_raw=False, cmap='viridis',add_outline=True)
 
 
 #####################
 
 
 ### b) Preprocess the data and UMAP visualization
-print("Preprocessing counts matrix for CellRank 2 analysis")
 sc.tl.pca(adata, random_state=0)
 sc.pp.neighbors(adata, random_state=0)
-sc.pl.umap(adata, color=["seurat_clusters","iter_cluster_id_with_paneth","cytotrace","stemness_index"], ncols=2, add_outline=True,show=False)
+sc.pl.umap(adata, color=["seurat_clusters","iter_cluster_id_with_paneth","cytotrace","stemness_index"], ncols=2, add_outline=True)
 
-##########################################################################################################
-##########################################################################################################
-### CellRank2 analysis with CytoTRACE Kernel
-##########################################################################################################
-##########################################################################################################
+#####################
 
 ### c) CytoTRACE kernel
 # c.1) Setup kernel
@@ -105,11 +93,7 @@ ctk = CytoTRACEKernel(adata) # initialize the CellRank2 kernel
 ctk = ctk.compute_cytotrace().compute_transition_matrix(threshold_scheme="soft",nu=0.5) # compute transition matrix
 
 figures_dir_CytoTRACE = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/figures/CR2_CytoTRACEKernel/"
-
-if os.path.exists(figures_dir_CytoTRACE):
-    print("'figures_dir_CytoTRACE' directory already exists")
-else:
-    os.mkdir(figures_dir_CytoTRACE)
+os.mkdir(figures_dir_CytoTRACE)
 
 ctk_pseudotime_figure = figures_dir_CytoTRACE + "CytoTRACE_pseudotime.pdf"
 with rc_context({'figure.figsize': (5, 5)}):
@@ -133,31 +117,7 @@ ctk.plot_random_walks(
     figsize=(3,3)
 )
 
-# c.4) Simulate a random walk on the Markov chain implied by the transition matrix 
-# sampling cells randomly among all clusters
-ctk_rw_figure = figures_dir_CytoTRACE + "CytoTRACE_random_walk_stem-1.pdf"
-ctk.plot_random_walks(
-    seed=0,
-    n_sims=100,
-    start_ixs={'iter_cluster_id_with_paneth':'stem-1'},
-    legend_loc="right",
-    dpi=100,
-    save=ctk_rw_figure
-)
-
-# c.5) visualize the transition matrix
-# sampling cells randomly from stem-1 population
-ctk_rw_figure = figures_dir_CytoTRACE + "CytoTRACE_random_walk_stem-2.pdf"
-ctk.plot_random_walks(
-    seed=0,
-    n_sims=100,
-    start_ixs={'iter_cluster_id_with_paneth': "stem-2"},
-    legend_loc="right",
-    dpi=100,
-    save=ctk_rw_figure
-)
-
-# c.6) visualize the transition matrix
+# c.4) visualize the transition matrix
 differentiation_figure = figures_dir_CytoTRACE + "CytoTRACE_differentiation_ges_clusters.png"
 ctk.plot_projection(basis="umap", color="seurat_clusters", 
                     legend_loc="right", save=differentiation_figure, show=False)
@@ -168,20 +128,43 @@ ctk.plot_projection(basis="umap", color="iter_cluster_id_with_paneth",
                     legend_loc="right", save=differentiation_figure, show=False)
 
 
-# c.7) Check terminal states from annotations
-annotated_terminal_states_figure = figures_dir_CytoTRACE + "annotated_terminal_states.pdf"
-sc.pl.embedding(adata, basis="umap", color="terminal_states", add_outline=True) 
+# d.5) Check terminal states from annotations
+sc.pl.embedding(adata, basis="umap", color="terminal_states", add_outline=True)
 #####################
+
+
+### d) Connectivity kernel
+# d.1) Setup kernel 
+print("Working with Connectivity kernel")
+from cellrank.kernels import ConnectivityKernel 
+
+# d.2) compute transition matrix
+ck = ConnectivityKernel(adata).compute_transition_matrix()
+
+# d.3) Simulate a random walk on the Markov chain implied by the transition matrix 
+ck_rw_figure = figures_dir + "Connectivity_random_walk.pdf"
+ck.plot_random_walks(
+    seed=0,
+    n_sims=100,
+    start_ixs=None,
+    legend_loc="right",
+    dpi=100,
+    save=ck_rw_figure
+)
+
+# d.4) Check terminal states from annotations
+sc.pl.embedding(adata, basis="umap", color="terminal_states", add_outline=True)
+
 
 
 ###################
 
 
-### d) Advanced estimator-based analysis of the CytoTRACE kernel with estimators 
+### e) Advanced estimator-based analysis of the CytoTRACE kernel with estimators 
 from cellrank.estimators import GPCCA
 from cellrank.estimators import CFLARE
 
-# d.1) compute estimator
+# e.1) compute estimator
 g_ctk = cr.estimators.GPCCA(ctk)
 g_ctk.compute_schur(n_components=100) # compute Schur decomposition
 eig_figure = figures_dir_CytoTRACE + "GPCCA_eig.pdf"
@@ -197,16 +180,16 @@ g_ctk.plot_macrostate_composition(key="iter_cluster_id_with_paneth", figsize=(8.
 coarse_T_figure = figures_dir_CytoTRACE + "GPCCA_coarse_T.pdf"
 g_ctk.plot_coarse_T(annotate=True, save=coarse_T_figure) # plot transition matrix
 
-# d.2) compute terminal states
+# e.2) compute terminal states
 g_ctk.predict_terminal_states()
 terminal_states_figure = figures_dir_CytoTRACE + "GPCCA_terminal_states.pdf"
 g_ctk.plot_macrostates(which="terminal", legend_loc="right", s=100, save=terminal_states_figure, show=False)
 
-# d.3) predict initial states
+# e.3) predict initial states
 g_ctk.predict_initial_states(allow_overlap=True)
 g_ctk.plot_macrostates(which="initial", s=100)
 
-# d.4) verify the initial score by aggregating across cytotrace markers
+# e.4) verify the initial score by aggregating across cytotrace markers
 
 sc.tl.score_genes(
     adata, gene_list=cytotrace_markers, score_name="initial_score", use_raw=False
@@ -368,153 +351,50 @@ cr.pl.heatmap(
 
 
 
-##############################################################################
-
-
-
-##########################################################################################################
-##########################################################################################################
-### CellRank2 analysis with Connectivity Kernel
-##########################################################################################################
-##########################################################################################################
-
-
-
-### h) Connectivity kernel
-# h.1) Setup kernel 
-print("Working with Connectivity kernel")
-from cellrank.kernels import ConnectivityKernel 
-
-
-figures_dir_Connectivity = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/figures/CR2_ConnectivityKernel/" # where to save figures for connectivity kernel
-if os.path.exists(figures_dir_Connectivity):
-    print("'figures_dir_Connectivity' directory already exists")
-else:
-    os.mkdir(figures_dir_Connectivity)
-
-# h.2) compute transition matrix
-ck = ConnectivityKernel(adata).compute_transition_matrix()
-
-
-# h.3) Simulate a random walk on the Markov chain implied by the transition matrix 
-# sampling cells randomly among all clusters
-ck_rw_figure = figures_dir_Connectivity + "Connectivity_random_walk.pdf"
-ck.plot_random_walks(
-    seed=0,
-    n_sims=100,
-    start_ixs=None,
-    legend_loc="right",
-    dpi=100,
-    save=ck_rw_figure
-)
-
-# h.4) visualize the transition matrix
-# sampling cells randomly from stem-1 population
-ck_rw_figure = figures_dir_Connectivity + "Connectivity_random_walk_stem-1.pdf"
-ck.plot_random_walks(
-    seed=0,
-    n_sims=100,
-    start_ixs={'iter_cluster_id_with_paneth': ["stem-1"]},
-    legend_loc="right",
-    dpi=100,
-    save=ck_rw_figure
-)
-
-# sampling cells randomly from stem-2 population
-ck_rw_figure = figures_dir_Connectivity + "Connectivity_random_walk_stem-2.pdf"
-ck.plot_random_walks(
-    seed=0,
-    n_sims=100,
-    start_ixs={'iter_cluster_id_with_paneth': ["stem-2"]},
-    legend_loc="right",
-    dpi=100,
-    save=ck_rw_figure
-)
-
-# h.4) visualize the transition matrix
-differentiation_figure = figures_dir_Connectivity + "Connectivity_differentiation_ges_clusters.png"
-ck.plot_projection(basis="umap", color="seurat_clusters", 
-                    legend_loc="right", save=differentiation_figure, show=False)
-
-
-differentiation_figure = figures_dir_Connectivity + "Connectivity_differentiation_pa_clusters.png"
-ck.plot_projection(basis="umap", color="iter_cluster_id_with_paneth", 
-                    legend_loc="right", save=differentiation_figure, show=False)
-
-
-
-# h.5) Check terminal states from annotations
-sc.pl.embedding(adata, basis="umap", color="terminal_states", add_outline=True)
-
-
 
 
 
 
 #############################################
 
-### i) Analyze Connectivity kernel with estimators 
-# # i.1) Setup estimator 
-from cellrank.estimators import GPCCA
-from cellrank.estimators import CFLARE
+### f) Analyze Connectivity kernel with estimators
+# # f.1) Setup estimator 
 print("Analysing Connectivity kernel with GPCCA")
+gpcca_ck = GPCCA(ck)
 
-# i.1) compute estimator
-g_ck = GPCCA(ck)
-g_ck.compute_schur(n_components=100) # compute Schur decomposition
-eig_figure = figures_dir_Connectivity + "GPCCA_eig.pdf"
-g_ck.plot_spectrum(real_only=True, n=None, show_all_xticks=False, save=eig_figure, figsize=(20,5))
+# f.2) Fit the estimator to compute macrostates of cellular dynamics
+gpcca_ck.fit(n_states=8, cluster_key="seurat_clusters")
+gpcca_ck.plot_macrostates(which="all")
 
-g_ck.compute_macrostates(n_states=n_macro_Connectivity, cluster_key="iter_cluster_id_with_paneth")
-macrostates_figure = figures_dir_Connectivity + "GPCCA_macrostates.pdf"
-g_ck.plot_macrostates(which="all", legend_loc="right", s=100, save=macrostates_figure, show=False)
+# f.3) Predict initial states
+gpcca_ck.predict_initial_states() 
+gpcca_ck.plot_macrostates(which="initial")
 
-macrostates_figure_composition = figures_dir_Connectivity + "GPCCA_macrostates_composition.pdf"
-g_ck.plot_macrostate_composition(key="iter_cluster_id_with_paneth", figsize=(8.5,4), show=False, save=macrostates_figure_composition) # composition of each macrostate
+# f.4) Predict terminal states
+gpcca_ck.predict_terminal_states(method="top_n", n_states=3)
+gpcca_ck.plot_macrostates(which="terminal")
 
+# f.5) Compute and plot fate probabilities 
+gpcca_ck.compute_fate_probabilities()
+gpcca_ck.plot_fate_probabilities(legend_loc="right")
 
-coarse_T_figure = figures_dir_Connectivity + "GPCCA_coarse_T.pdf"
-g_ck.plot_coarse_T(annotate=True, save=coarse_T_figure) # plot transition matrix
+# f.6) Compute 
+cr.pl.circular_projection(adata, keys="seurat_clusters", legend_loc="right")
 
+# f.6) Inferring putative driver genes for any of these trajectories
+#mono_drivers = g.compute_lineage_drivers(lineages="Mono_1_1")
+#mono_drivers.head(10)
 
-# i.2) compute terminal states
-g_ck.predict_terminal_states()
-terminal_states_figure = figures_dir_Connectivity + "GPCCA_terminal_states.pdf"
-g_ck.plot_macrostates(which="terminal", legend_loc="right", s=100, save=terminal_states_figure, show=False)
-
-
-# i.3) predict initial states
-g_ck.predict_initial_states(allow_overlap=True)
-g_ck.plot_macrostates(which="initial", s=100)
-
+# f.7) Visualizing expression trends
+model_ck = cr.models.GAMR(adata)
 
 
-#########################################################
-# j) Estimating Fate Probabilities for Connectivity kernel
+##############################################################################
 
-# j.1) compute fate probabilities towards identified terminal states
-g_ck.compute_fate_probabilities()
 
-# j.2) visualize fate probabilities on UMAP
-fate_probability_figure = figures_dir_Connectivity + "Fate_probability.pdf"
-g_ck.plot_fate_probabilities(same_plot=False, vmax=1,show=False, save=fate_probability_figure)
 
-# j.3) visualize fate probabilities on a circular projection
-fate_circular_figure = figures_dir_Connectivity + "Fate_circular.pdf"
-cr.pl.circular_projection(adata, keys="iter_cluster_id_with_paneth", legend_loc="right", save=fate_circular_figure)
 
-# j.4) aggregate fate probabilities and visualize how they are committed towards selected cell types   
-progenitor_states = ["stem-1", "stem-2"] # select stem-1 and stem-2 as the progenitor states to aggregate their probabilities
-fate_committed_vln_figure = figures_dir_Connectivity + "Fate_committed_vln.pdf"
-ck_terminal_states = g_ck.terminal_states.unique().dropna().to_list()
-cr.pl.aggregate_fate_probabilities(
-    adata,
-    mode="violin",
-    lineages=ck_terminal_states, # "secretory-3"
-    cluster_key="iter_cluster_id_with_paneth",
-    clusters=progenitor_states,
-    save=fate_committed_vln_figure
-)
+
 
 
 

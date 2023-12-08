@@ -1,12 +1,9 @@
 python3
+
 ### a) Import packages and data
 # a.1) setup path to data-containing folder and savings and parameters
 h5ad_path = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/TE001-h5ad/"
 figures_dir = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/figures/"
-
-terminal_macrostates_mode = "preset" # "preset" or "unsupervised"; whether to set terminal states a priori or to 
-
-print(" 'terminal_macrostates_mode' set to: " + terminal_macrostates_mode)
 
 n_macro_CytoTRACE = 7 # number of macrostates 
 n_macro_Connectivity= 7 # number of macrostates
@@ -19,7 +16,11 @@ import pandas as pd
 import os
 from matplotlib import rc_context
 import matplotlib.pyplot as plt
+import scvelo as scv
+
 sc.settings.set_figure_params(frameon=False, dpi=100)
+scv.settings.verbosity = 3
+scv.settings.set_figure_params("scvelo")
 cr.settings.verbosity = 2
 
 import warnings
@@ -32,33 +33,39 @@ cytotrace_markers = ['Smarca5','Rbbp7','Tcerg1','Hnrnpd','Hmg20b','Nelfe','Ube2i
 counts_h5ad = h5ad_path + "TE001-counts.h5ad"
 adata = sc.read_h5ad(counts_h5ad) # load in object
 
+# a.4) load .loom file with RNA velocity annalysis in it
+counts_loom = h5ad_path + "TE001.loom"
+ldata = scv.read(counts_loom, cache=True)
 
-# a.4) load metadata for TE001 
+# a.5) merge loom file with gene expression adata object
+adata = scv.utils.merge(adata,ldata)
+
+# a.6) load metadata for TE001 
 metadata_csv = h5ad_path + "TE001-metadata-umap-and-clusters-for-paper.csv"
 metadata = pd.read_csv(metadata_csv)
 
-# a.5) process metadata in adata
+# a.7) process metadata in adata
 specified_columns = ["cell_id", "nCount_RNA", "nFeature_RNA", "mt_percent", "cytotrace_score.ges",
                      "cytotrace_gcs.ges", "S.Score", "G2M.Score", "Phase", "seurat_clusters", "singleR_labels", "stemness_index.ges"]
 
 adata.obs = adata.obs[specified_columns]
 cells_to_analyze = metadata['cell_id'] # cells to analyze
-adata = adata[adata.obs_names.isin(cells_to_analyze)] # subset cells to analyze in adata
+adata = adata[adata.obs['cell_id'].isin(cells_to_analyze)] # subset cells to analyze in adata
 
 adata.obs = pd.merge(adata.obs, metadata, on='cell_id', how='left') # merge metadata and include into counts object
- 
+
 adata.obs['seurat_clusters'] = adata.obs['seurat_clusters'].astype('category') # clusters as categorical variable
 
-# a.6) set UMAP coordinates to those obtained at protein activty
+# a.8) set UMAP coordinates to those obtained at protein activty
 umap_coordinates = np.array(adata.obs.loc[:, ['UMAP_1_scanpy','UMAP_2_scanpy']]) 
 adata.obsm['X_umap'] = umap_coordinates
 
 
-# a.7) Include metadata of terminal states for CellRank analysis
+# a.9) Include metadata of terminal states for CellRank analysis
 adata.obs['terminal_states'] = adata.obs['iter_cluster_id_with_paneth']
 adata.obs['terminal_states'].iloc[adata.obs['terminal_states'].isin(["stem-1","stem-2"])] = np.nan
 
-print("adata contains the counts for the TE001 dataset")
+print("adata contains the counts and RNA velocity for the TE001 dataset")
 #counts = adata.raw.to_adata() # the adata already contains the counts matrix
 
 # a.8) display specific marker genes
@@ -66,111 +73,102 @@ log_expression = adata.copy()
 sc.pp.normalize_total(log_expression, target_sum=1e4)
 sc.pp.log1p(log_expression)
 
-print("UMAP showing Lgr4 and Lgr5 expression")
-sc.pl.umap(log_expression,color=["Lgr4","Lgr5"], use_raw=False, cmap='viridis',add_outline=True, show=False)
+sc.pl.umap(log_expression,color=["Lgr4","Lgr5"], use_raw=False, cmap='viridis',add_outline=True)
 
 
 #####################
 
 
 ### b) Preprocess the data and UMAP visualization
-print("Preprocessing counts matrix for CellRank 2 analysis")
+scv.pp.filter_and_normalize(
+    adata, min_shared_counts=20, n_top_genes=2000, subset_highly_variable=False
+)
 sc.tl.pca(adata, random_state=0)
-sc.pp.neighbors(adata, random_state=0)
-sc.pl.umap(adata, color=["seurat_clusters","iter_cluster_id_with_paneth","cytotrace","stemness_index"], ncols=2, add_outline=True,show=False)
+sc.pp.neighbors(adata,  n_pcs=30, n_neighbors=30, random_state=0)
+scv.pp.moments(adata, n_pcs=None, n_neighbors=None)
+
+### c) Run scVelo's dynamical model to estimate model parameters
+# c.1) get the parameters
+from comm import create_comm
+scv.tl.recover_dynamics(adata, n_jobs=8)
+
+# c.2) compute the actual velocities
+scv.tl.velocity(adata, mode="dynamical")
+
 
 ##########################################################################################################
 ##########################################################################################################
-### CellRank2 analysis with CytoTRACE Kernel
+### CellRank2 analysis with VelocityKernel
 ##########################################################################################################
 ##########################################################################################################
 
-### c) CytoTRACE kernel
+### c) Velocity kernel
 # c.1) Setup kernel
-print("Working with CytoTRACE kernel")
-from cellrank.kernels import CytoTRACEKernel
-import scvelo as scv
-# CytoTRACE by default uses imputed data - a simple way to compute
-# k-NN imputed data is to use scVelo's moments function.
-# However, note that this function expects `spliced` counts because
-# it's designed for RNA velocity, so we're using a simple hack here:
-if 'spliced' not in adata.layers or 'unspliced' not in adata.layers:
-    adata.layers['spliced'] = adata.X
-    adata.layers['unspliced'] = adata.X
-scv.pp.moments(adata) # hack for CytoTRACEkernel
+print("Working with Velocity kernel")
+# The VelocityKernel computes transition probabilities Tij to each cell j in the neighborhood of i,
+# by quantifying how much the velocity vector vi of cell i points towards each of its nearest 
+# neighbors.
 
-ctk = CytoTRACEKernel(adata) # initialize the CellRank2 kernel
+vk = cr.kernels.VelocityKernel(adata) # initialize the CellRank2 kernel
 
-# c.2) compute transition matrix
-ctk = ctk.compute_cytotrace().compute_transition_matrix(threshold_scheme="soft",nu=0.5) # compute transition matrix
+# c.2) compute transition probability
+vk.compute_transition_matrix(model="stochastic") # compute transition matrix
 
-figures_dir_CytoTRACE = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/figures/CR2_CytoTRACEKernel/"
+figures_dir_Velocity = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/figures/CR2_VelocityKernel/"
 
-if os.path.exists(figures_dir_CytoTRACE):
-    print("'figures_dir_CytoTRACE' directory already exists")
+if os.path.exists(figures_dir_Velocity):
+    print("'figures_dir_Velocity' directory already exists")
 else:
-    os.mkdir(figures_dir_CytoTRACE)
-
-ctk_pseudotime_figure = figures_dir_CytoTRACE + "CytoTRACE_pseudotime.pdf"
-with rc_context({'figure.figsize': (5, 5)}):
-    sc.pl.umap(adata, color=['ct_score', 'ct_pseudotime'], show=False, add_outline=True)
-    plt.savefig(ctk_pseudotime_figure)
-
-ctk_pseudotime_vln = figures_dir_CytoTRACE + "CytoTRACE_pseudotime_vln.pdf"
-with rc_context({'figure.figsize': (8.5, 8.5)}):
-    sc.pl.violin(adata, keys=["ct_pseudotime"], groupby="iter_cluster_id_with_paneth", rotation=90, show=False)
-    plt.savefig(ctk_pseudotime_vln)
+    os.mkdir(figures_dir_Velocity)
 
 # c.3) Simulate a random walk on the Markov chain implied by the transition matrix 
-ctk_rw_figure = figures_dir_CytoTRACE + "CytoTRACE_random_walk.pdf"
-ctk.plot_random_walks(
+vk_rw_figure = figures_dir_Velocity + "Velocity_random_walk.pdf"
+vk.plot_random_walks(
     seed=0,
     n_sims=100,
     start_ixs=None,
     legend_loc="right",
     dpi=100,
-    save=ctk_rw_figure,
+    save=vk_rw_figure,
     figsize=(3,3)
 )
 
-# c.4) Simulate a random walk on the Markov chain implied by the transition matrix 
-# sampling cells randomly among all clusters
-ctk_rw_figure = figures_dir_CytoTRACE + "CytoTRACE_random_walk_stem-1.pdf"
-ctk.plot_random_walks(
+
+vk_rw_figure = figures_dir_Velocity + "Velocity_random_walk_stem-1.pdf"
+vk.plot_random_walks(
     seed=0,
     n_sims=100,
-    start_ixs={'iter_cluster_id_with_paneth':'stem-1'},
+    start_ixs={'iter_cluster_id_with_paneth': ["stem-1"]},
     legend_loc="right",
     dpi=100,
-    save=ctk_rw_figure
+    save=vk_rw_figure
 )
 
-# c.5) visualize the transition matrix
-# sampling cells randomly from stem-1 population
-ctk_rw_figure = figures_dir_CytoTRACE + "CytoTRACE_random_walk_stem-2.pdf"
-ctk.plot_random_walks(
+# sampling cells randomly from stem-2 population
+vk_rw_figure = figures_dir_Velocity + "Velocity_random_walk_stem-2.pdf"
+vk.plot_random_walks(
     seed=0,
     n_sims=100,
-    start_ixs={'iter_cluster_id_with_paneth': "stem-2"},
+    start_ixs={'iter_cluster_id_with_paneth': ["stem-2"]},
     legend_loc="right",
     dpi=100,
-    save=ctk_rw_figure
+    save=vk_rw_figure
 )
 
-# c.6) visualize the transition matrix
-differentiation_figure = figures_dir_CytoTRACE + "CytoTRACE_differentiation_ges_clusters.png"
-ctk.plot_projection(basis="umap", color="seurat_clusters", 
+
+# c.4) visualize the transition matrix
+differentiation_figure = figures_dir_Velocity + "Velocity_differentiation_ges_clusters.png"
+vk.plot_projection(basis="umap", color="seurat_clusters", 
                     legend_loc="right", save=differentiation_figure, show=False)
 
 
-differentiation_figure = figures_dir_CytoTRACE + "CytoTRACE_differentiation_pa_clusters.png"
-ctk.plot_projection(basis="umap", color="iter_cluster_id_with_paneth", 
+differentiation_figure = figures_dir_Velocity + "Velocity_differentiation_pa_clusters.png"
+vk.plot_projection(basis="umap", color="iter_cluster_id_with_paneth", 
                     legend_loc="right", save=differentiation_figure, show=False)
 
 
-# c.7) Check terminal states from annotations
-annotated_terminal_states_figure = figures_dir_CytoTRACE + "annotated_terminal_states.pdf"
-sc.pl.embedding(adata, basis="umap", color="terminal_states", add_outline=True) 
+# c.5) Check terminal states from annotations
+sc.pl.embedding(adata, basis="umap", color="terminal_states", add_outline=True)
 #####################
 
 
