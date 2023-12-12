@@ -37,21 +37,24 @@ adata = sc.read_h5ad(counts_h5ad) # load in object
 # a.4) load metadata for TE006 
 metadata_csv = h5ad_path + "TE006-metadata-ingest-with-cluster-ids-with-paneth-cluster.csv"
 metadata = pd.read_csv(metadata_csv)
+metadata = metadata.rename(columns={'index': 'cell_id'})
+
+metadata_csv_umap = h5ad_path + "ablation-metadata-ingest.csv" 
+metadata_umap = pd.read_csv(metadata_csv_umap)
+metadata_umap = metadata_umap[['cell_id','UMAP_1','UMAP_2']]
 
 # a.5) process metadata in adata
-specified_columns = ["cell_id", "nCount_RNA", "nFeature_RNA", "mt_percent", "cytotrace_score.ges",
-                     "cytotrace_gcs.ges", "S.Score", "G2M.Score", "Phase", "seurat_clusters", "singleR_labels", "stemness_index.ges"]
-
-adata.obs = adata.obs[specified_columns]
 cells_to_analyze = metadata['cell_id'] # cells to analyze
 adata = adata[adata.obs_names.isin(cells_to_analyze)] # subset cells to analyze in adata
+adata.obs['cell_id'] = adata.obs_names
 
 adata.obs = pd.merge(adata.obs, metadata, on='cell_id', how='left') # merge metadata and include into counts object
- 
-adata.obs['seurat_clusters'] = adata.obs['seurat_clusters'].astype('category') # clusters as categorical variable
+adata.obs = pd.merge(adata.obs, metadata_umap, on='cell_id', how='left').set_index('cell_id') # merge metadata and include into counts object
+
+#adata.obs_names = adata.obs['cell_id']
 
 # a.6) set UMAP coordinates to those obtained at protein activty
-umap_coordinates = np.array(adata.obs.loc[:, ['UMAP_1_scanpy','UMAP_2_scanpy']]) 
+umap_coordinates = np.array(adata.obs.loc[:, ['UMAP_1','UMAP_2']]) 
 adata.obsm['X_umap'] = umap_coordinates
 
 
@@ -59,7 +62,7 @@ adata.obsm['X_umap'] = umap_coordinates
 adata.obs['terminal_states'] = adata.obs['iter_cluster_id_with_paneth']
 adata.obs['terminal_states'].iloc[adata.obs['terminal_states'].isin(["stem-1","stem-2"])] = np.nan
 
-print("adata contains the counts for the TE001 dataset")
+print("adata contains the counts for the TE006 dataset")
 #counts = adata.raw.to_adata() # the adata already contains the counts matrix
 
 #Show Lgr4 and Lgr5 marker genes
@@ -68,15 +71,22 @@ log_expression = adata.copy()
 sc.pp.normalize_total(log_expression, target_sum=1e4)
 sc.pp.log1p(log_expression)
 
+
+# add log1p-transformed expression to selected genes to the adata  
+log_selected_df = log_expression[:,['Lgr4','Lgr5','Atad2','Mki67']].to_df()
+log_selected_df = log_selected_df.rename(columns={'Lgr4':'log(Lgr4)', 'Lgr5':'log(Lgr5)', 'Atad2':'log(Atad2)', 'Mki67':'log(Mki67)'})
+adata.obs = pd.merge(adata.obs, log_selected_df, left_index=True, right_index=True, how='left') # merge metadata and include into log_selected_df
+
 print("UMAP showing Lgr4 and Lgr5 expression")
-sc.pl.umap(log_expression,color=["Lgr4","Lgr5"], use_raw=False, cmap='viridis',add_outline=True)
+sc.pl.umap(log_expression,color=["Lgr4","Lgr5"], use_raw=False, cmap='viridis',add_outline=True, show=False)
 
 #Show clusters at gene expression, clusters at protein activity, precomputed cytotrace score (with Cytotrace, not CellRank) and stemness index
-sc.pl.umap(adata, color=["seurat_clusters","iter_cluster_id_with_paneth","cytotrace","stemness_index"], ncols=2, add_outline=True)
+sc.pl.umap(adata, color=["iter_cluster_id_with_paneth","cytotrace","stemness_index"], add_outline=True, show=False)
 
 #Preprocess data for CellRank2 analysis
 ### b) Preprocess the data 
 print("Preprocessing counts matrix for CellRank 2 analysis")
+sc.pp.filter_genes(adata, min_cells=10)
 sc.tl.pca(adata, random_state=0)
 sc.pp.neighbors(adata, random_state=0)
 
@@ -169,11 +179,6 @@ ctk.plot_random_walks(
 #Visualize the projected Transition Probability matrix on the UMAP, with clusters colored at gene expression (panel 1) and protein activity (panel 2).
 # Also, show what we consider as the most differentiated states in the dataset (panel 3).
 # c.6) visualize the transition matrix
-differentiation_figure = figures_dir_CytoTRACE + "CytoTRACE_differentiation_ges_clusters.png"
-ctk.plot_projection(basis="umap", color="seurat_clusters", 
-                    legend_loc="right", save=differentiation_figure, show=True)
-
-
 differentiation_figure = figures_dir_CytoTRACE + "CytoTRACE_differentiation_pa_clusters.png"
 ctk.plot_projection(basis="umap", color="iter_cluster_id_with_paneth", 
                     legend_loc="right", save=differentiation_figure, show=True)
@@ -251,6 +256,9 @@ g_ctk.plot_fate_probabilities(same_plot=False, vmax=1,show=True, save=fate_proba
 # f.3) visualize fate probabilities on a circular projection
 fate_circular_figure = figures_dir_CytoTRACE + "Fate_circular.pdf"
 cr.pl.circular_projection(adata, keys="iter_cluster_id_with_paneth", legend_loc="right", save=fate_circular_figure)
+
+fate_circular_figure = figures_dir_CytoTRACE + "Fate_circular_genes.pdf"
+cr.pl.circular_projection(adata, keys=["log(Lgr4)", "log(Lgr5)", "log(Atad2)", "log(Mki67)"], cmap = "Oranges", ncols=2, legend_loc="right", save=fate_circular_figure)
 
 # f.4) aggregate fate probabilities and visualize how they are committed towards selected cell types   
 progenitor_states = ["stem-1", "stem-2"] # select stem-1 and stem-2 as the progenitor states to aggregate their probabilities
