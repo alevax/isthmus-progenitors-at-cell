@@ -12,7 +12,7 @@ dpi_selected=600
 min_cells = 5
 min_feats = 1000
 
-min_nFeature_RNA = 1000
+min_nFeature_RNA = 1500
 max_nFeature_RNA = 20000
 max_nCount_RNA = 100000
 mt_percent_threshold = 10
