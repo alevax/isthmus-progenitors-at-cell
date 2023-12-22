@@ -1,5 +1,5 @@
 # Luca Zanella
-# 11.28.2023
+# 12.21.2023
 
 # Converting TE001 samples to h5ad for usage with Python (for scanpy and CellRank2 analysis)
 # INPUTS (MANDATORY): 
@@ -36,6 +36,11 @@ cat("\014")
   
   vp_Seurat <- readRDS(file.path(rdsFolder, "TE001-subnetworks-one-signature-seurat-viper-analysis-with-metacell-data-with-paneth.rds"))
 
+}
+
+# Filter out Seurat object with more stringent thresholds
+{
+  counts_Seurat <- subset(counts_Seurat, subset = nFeature_RNA > 1500)
 }
 
 

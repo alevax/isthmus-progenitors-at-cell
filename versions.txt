@@ -1,0 +1,360 @@
+# packages in environment at /Users/lucazanella7/mambaforge:
+#
+# Name                    Version                   Build  Channel
+absl-py                   1.4.0                    pypi_0    pypi
+adjusttext                0.8                      pypi_0    pypi
+aiofiles                  22.1.0          py310hca03da5_0  
+aiohttp                   3.8.5                    pypi_0    pypi
+aiosignal                 1.3.1                    pypi_0    pypi
+aiosqlite                 0.18.0          py310hca03da5_0  
+anndata                   0.9.2              pyhd8ed1ab_0    conda-forge
+annotated-types           0.5.0                    pypi_0    pypi
+anyio                     3.5.0           py310hca03da5_0  
+appnope                   0.1.2           py310hca03da5_1001  
+argon2-cffi               21.3.0             pyhd3eb1b0_0  
+argon2-cffi-bindings      21.2.0          py310h1a28f6b_0  
+arpack                    3.7.0                h58ebc17_2    conda-forge
+arrow                     1.2.3                    pypi_0    pypi
+asttokens                 2.0.5              pyhd3eb1b0_0  
+async-timeout             4.0.2                    pypi_0    pypi
+attrs                     22.1.0          py310hca03da5_0  
+babel                     2.11.0          py310hca03da5_0  
+backcall                  0.2.0              pyhd3eb1b0_0  
+backoff                   2.2.1                    pypi_0    pypi
+beautifulsoup4            4.12.2          py310hca03da5_0  
+blas                      2.116                  openblas    conda-forge
+blas-devel                3.9.0           16_osxarm64_openblas    conda-forge
+bleach                    4.1.0              pyhd3eb1b0_0  
+blessed                   1.20.0                   pypi_0    pypi
+boltons                   23.0.0          py310hca03da5_0  
+bottleneck                1.3.5           py310h96f19d2_0  
+brotli                    1.0.9                h1a28f6b_7  
+brotli-bin                1.0.9                h1a28f6b_7  
+brotlipy                  0.7.0           py310h1a28f6b_1002  
+bzip2                     1.0.8                h620ffc9_4  
+c-ares                    1.19.0               h80987f9_0  
+ca-certificates           2023.11.17           hf0a4a13_0    conda-forge
+cached-property           1.5.2                hd8ed1ab_1    conda-forge
+cached_property           1.5.2              pyha770c72_1    conda-forge
+cachetools                5.3.1                    pypi_0    pypi
+cellrank                  2.0.2.dev1+gc11a86b          pypi_0    pypi
+certifi                   2023.11.17         pyhd8ed1ab_0    conda-forge
+cffi                      1.15.1          py310h80987f9_3  
+chardet                   3.0.4                    pypi_0    pypi
+charset-normalizer        2.0.4              pyhd3eb1b0_0  
+chex                      0.1.7                    pypi_0    pypi
+click                     8.1.6                    pypi_0    pypi
+cmappy                    4.0.1                    pypi_0    pypi
+comm                      0.1.2           py310hca03da5_0  
+conda                     23.9.0          py310hbe9552e_0    conda-forge
+conda-package-handling    2.2.0           py310hca03da5_0  
+conda-package-streaming   0.9.0           py310hca03da5_0  
+contextlib2               21.6.0                   pypi_0    pypi
+contourpy                 1.0.5           py310h525c30c_0  
+croniter                  1.4.1                    pypi_0    pypi
+cryptography              41.0.2          py310h6204c90_0  
+cycler                    0.11.0             pyhd3eb1b0_0  
+dateutils                 0.6.12                   pypi_0    pypi
+dcor                      0.6                pyhd8ed1ab_0    conda-forge
+debugpy                   1.6.7           py310h313beb8_0  
+decorator                 5.1.1              pyhd3eb1b0_0  
+decoupler                 1.5.0                    pypi_0    pypi
+deepdiff                  6.3.1                    pypi_0    pypi
+defusedxml                0.7.1              pyhd3eb1b0_0  
+deprecated                1.2.14                   pypi_0    pypi
+dm-tree                   0.1.8                    pypi_0    pypi
+docrep                    0.3.2                    pypi_0    pypi
+entrypoints               0.4             py310hca03da5_0  
+et_xmlfile                1.1.0           py310hca03da5_0  
+etils                     1.4.0                    pypi_0    pypi
+executing                 0.8.3              pyhd3eb1b0_0  
+fastapi                   0.100.0                  pypi_0    pypi
+fastcluster               1.2.6                    pypi_0    pypi
+fftw                      3.3.10          mpi_mpich_h0cb5807_8    conda-forge
+filelock                  3.12.2                   pypi_0    pypi
+flax                      0.7.0                    pypi_0    pypi
+fmt                       9.1.0                h48ca7d4_0  
+fonttools                 4.25.0             pyhd3eb1b0_0  
+fqdn                      1.5.1                    pypi_0    pypi
+freetype                  2.12.1               h1192e45_0  
+frozenlist                1.4.0                    pypi_0    pypi
+fsspec                    2023.6.0                 pypi_0    pypi
+giflib                    5.2.1                h80987f9_3  
+glpk                      5.0                  h6d7a090_0    conda-forge
+gmp                       6.2.1                h9f76cd9_0    conda-forge
+h11                       0.14.0                   pypi_0    pypi
+h5py                      3.10.0          nompi_py310h428b110_100    conda-forge
+hdf5                      1.14.2          mpi_mpich_hb01e5a5_0    conda-forge
+hypre                     2.28.0          mpi_mpich_hd226f01_0    conda-forge
+icu                       73.2                 hc8870d7_0    conda-forge
+idna                      2.8                      pypi_0    pypi
+igraph                    0.10.7               h59f06e0_0    conda-forge
+imageio                   2.33.0                   pypi_0    pypi
+importlib-metadata        4.13.0                   pypi_0    pypi
+importlib-resources       6.1.1                    pypi_0    pypi
+importlib_metadata        6.0.0                hd3eb1b0_0  
+inquirer                  3.1.3                    pypi_0    pypi
+ipykernel                 6.25.0          py310h33ce5c2_0  
+ipython                   8.12.2          py310hca03da5_0  
+ipython_genutils          0.2.0              pyhd3eb1b0_1  
+ipywidgets                8.0.4           py310hca03da5_0  
+isoduration               20.11.0                  pypi_0    pypi
+itsdangerous              2.1.2                    pypi_0    pypi
+jax                       0.4.13                   pypi_0    pypi
+jaxlib                    0.4.13                   pypi_0    pypi
+jedi                      0.18.1          py310hca03da5_1  
+jinja2                    3.0.3                    pypi_0    pypi
+joblib                    1.2.0           py310hca03da5_0  
+jpeg                      9e                   h80987f9_1  
+json5                     0.9.6              pyhd3eb1b0_0  
+jsonpatch                 1.32               pyhd3eb1b0_0  
+jsonpointer               2.1                pyhd3eb1b0_0  
+jsonschema                4.17.3          py310hca03da5_0  
+jupyter_client            7.4.9           py310hca03da5_0  
+jupyter_core              5.3.0           py310hca03da5_0  
+jupyter_events            0.6.3           py310hca03da5_0  
+jupyter_server            1.23.4          py310hca03da5_0  
+jupyter_server_fileid     0.9.0           py310hca03da5_0  
+jupyter_server_ydoc       0.8.0           py310hca03da5_1  
+jupyter_ydoc              0.2.4           py310hca03da5_0  
+jupyterlab                3.6.3           py310hca03da5_0  
+jupyterlab_pygments       0.1.2                      py_0  
+jupyterlab_server         2.22.0          py310hca03da5_0  
+jupyterlab_widgets        3.0.5           py310hca03da5_0  
+keyring                   23.4.1                   pypi_0    pypi
+kiwisolver                1.4.4           py310h313beb8_0  
+krb5                      1.21.2               h92f50d5_0    conda-forge
+lcms2                     2.12                 hba8e193_0  
+leidenalg                 0.10.1          py310h1253130_0    conda-forge
+lerc                      3.0                  hc377ac9_0  
+libaec                    1.1.2                h13dd4ca_1    conda-forge
+libarchive                3.6.2                h82b9b87_1    conda-forge
+libblas                   3.9.0           16_osxarm64_openblas    conda-forge
+libbrotlicommon           1.0.9                h1a28f6b_7  
+libbrotlidec              1.0.9                h1a28f6b_7  
+libbrotlienc              1.0.9                h1a28f6b_7  
+libcblas                  3.9.0           16_osxarm64_openblas    conda-forge
+libcurl                   8.2.1                hc52a3a8_0    conda-forge
+libcxx                    16.0.6               h4653b0c_0    conda-forge
+libdeflate                1.17                 h80987f9_0  
+libedit                   3.1.20221030         h80987f9_0  
+libev                     4.33                 h1a28f6b_1  
+libffi                    3.4.4                hca03da5_0  
+libgfortran               5.0.0           13_2_0_hd922786_1    conda-forge
+libgfortran5              13.2.0               hf226fd6_1    conda-forge
+libiconv                  1.17                 he4db4b2_0    conda-forge
+liblapack                 3.9.0           16_osxarm64_openblas    conda-forge
+liblapacke                3.9.0           16_osxarm64_openblas    conda-forge
+libleidenalg              0.11.1               h1995070_0    conda-forge
+libllvm14                 14.0.6               h7ec7a93_3  
+libmamba                  1.5.0                h4fa9c85_0    conda-forge
+libmambapy                1.5.0           py310hb7070d9_0    conda-forge
+libnghttp2                1.52.0               h62f6fdd_1  
+libopenblas               0.3.21          openmp_hc731615_3    conda-forge
+libpng                    1.6.39               h80987f9_0  
+libsodium                 1.0.18               h1a28f6b_0  
+libsolv                   0.7.24               ha614eb4_3    conda-forge
+libsqlite                 3.42.0               hb31c410_0    conda-forge
+libssh2                   1.11.0               h7a5bd25_0    conda-forge
+libtiff                   4.5.0                h313beb8_2  
+libwebp                   1.2.4                ha3663a8_1  
+libwebp-base              1.2.4                h80987f9_1  
+libxml2                   2.11.5               h25269f3_1    conda-forge
+libxslt                   1.1.37               h1728932_1    conda-forge
+libzlib                   1.2.13               h53f4e23_5    conda-forge
+lightning                 2.0.6                    pypi_0    pypi
+lightning-cloud           0.5.37                   pypi_0    pypi
+lightning-utilities       0.9.0                    pypi_0    pypi
+llvm-openmp               14.0.6               hc6e5704_0  
+llvmlite                  0.41.1                   pypi_0    pypi
+loompy                    3.0.7                    pypi_0    pypi
+lxml                      4.9.3           py310h78afa71_1    conda-forge
+lz4-c                     1.9.4                h313beb8_0  
+lzo                       2.10              h642e427_1000    conda-forge
+mamba                     1.5.0           py310ha5d4528_0    conda-forge
+markdown-it-py            3.0.0                    pypi_0    pypi
+markupsafe                2.1.1           py310h1a28f6b_0  
+matplotlib                3.7.1           py310hca03da5_1  
+matplotlib-base           3.7.1           py310h46d7db6_1  
+matplotlib-inline         0.1.6           py310hca03da5_0  
+matplotlib-venn           0.11.9             pyhd8ed1ab_0    conda-forge
+mdurl                     0.1.2                    pypi_0    pypi
+metis                     5.1.0             h13dd4ca_1007    conda-forge
+mistune                   0.8.4           py310h1a28f6b_1000  
+ml-collections            0.1.1                    pypi_0    pypi
+ml-dtypes                 0.2.0                    pypi_0    pypi
+mpfr                      4.2.1                h9546428_0    conda-forge
+mpi                       1.0                       mpich    conda-forge
+mpich                     4.1.2              hd4b5bf3_100    conda-forge
+mpmath                    1.3.0                    pypi_0    pypi
+msgpack                   1.0.5                    pypi_0    pypi
+mudata                    0.2.3                    pypi_0    pypi
+multidict                 6.0.4                    pypi_0    pypi
+multipledispatch          1.0.0                    pypi_0    pypi
+mumps-include             5.2.1               hce30654_11    conda-forge
+mumps-mpi                 5.2.1               hfd295ca_11    conda-forge
+munkres                   1.1.4                      py_0  
+natsort                   7.1.1              pyhd3eb1b0_0  
+nbclassic                 0.5.5           py310hca03da5_0  
+nbclient                  0.5.13          py310hca03da5_0  
+nbconvert                 6.5.4           py310hca03da5_0  
+nbformat                  5.7.0           py310hca03da5_0  
+ncurses                   6.4                  h313beb8_0  
+nest-asyncio              1.5.6           py310hca03da5_0  
+networkx                  3.1             py310hca03da5_0  
+notebook                  6.5.4           py310hca03da5_1  
+notebook-shim             0.2.2           py310hca03da5_0  
+numba                     0.58.1                   pypi_0    pypi
+numexpr                   2.8.4           py310hecc3335_1  
+numpy                     1.24.3          py310hb93e574_0  
+numpy-base                1.24.3          py310haf87e8b_0  
+numpy-groupies            0.10.2                   pypi_0    pypi
+numpyro                   0.12.1                   pypi_0    pypi
+openblas                  0.3.21          openmp_hf78f355_3    conda-forge
+openpyxl                  3.0.10          py310h1a28f6b_0  
+openssl                   3.2.0                h0d3ecfb_1    conda-forge
+opt-einsum                3.3.0                    pypi_0    pypi
+optax                     0.1.7                    pypi_0    pypi
+orbax-checkpoint          0.3.1                    pypi_0    pypi
+ordered-set               4.1.0                    pypi_0    pypi
+packaging                 23.0            py310hca03da5_0  
+pandas                    1.5.3                    pypi_0    pypi
+pandocfilters             1.5.0              pyhd3eb1b0_0  
+parmetis                  4.0.3             hefa2a9d_1005    conda-forge
+parso                     0.8.3              pyhd3eb1b0_0  
+patsy                     0.5.3           py310hca03da5_0  
+petsc                     3.20.1          real_hfe62963_100    conda-forge
+petsc4py                  3.20.1          real_h2ceedda_100    conda-forge
+pexpect                   4.8.0              pyhd3eb1b0_3  
+pickleshare               0.7.5           pyhd3eb1b0_1003  
+pillow                    9.4.0           py310h313beb8_0  
+pip                       23.2.1          py310hca03da5_0  
+platformdirs              3.10.0          py310hca03da5_0  
+pluggy                    1.0.0           py310hca03da5_1  
+portpicker                1.2.0                    pypi_0    pypi
+progressbar2              4.2.0                    pypi_0    pypi
+prometheus_client         0.14.1          py310hca03da5_0  
+prompt-toolkit            3.0.39                   pypi_0    pypi
+protobuf                  4.23.4                   pypi_0    pypi
+psutil                    5.9.0           py310h1a28f6b_0  
+ptscotch                  6.0.9                hd02db47_2    conda-forge
+ptyprocess                0.7.0              pyhd3eb1b0_2  
+pure_eval                 0.2.2              pyhd3eb1b0_0  
+pyasn1                    0.5.0                    pypi_0    pypi
+pyasn1-modules            0.3.0                    pypi_0    pypi
+pybind11-abi              4                    hd3eb1b0_1  
+pycosat                   0.6.4           py310h1a28f6b_0  
+pycparser                 2.21               pyhd3eb1b0_0  
+pydantic                  2.0.3                    pypi_0    pypi
+pydantic-core             2.3.0                    pypi_0    pypi
+pygam                     0.9.0                    pypi_0    pypi
+pygments                  2.15.1          py310hca03da5_1  
+pygpcca                   1.0.4                    pypi_0    pypi
+pyjwt                     2.8.0                    pypi_0    pypi
+pynndescent               0.5.10          py310hca03da5_0  
+pyopenssl                 23.2.0          py310hca03da5_0  
+pyparsing                 3.0.9           py310hca03da5_0  
+pyro-api                  0.1.2                    pypi_0    pypi
+pyro-ppl                  1.8.5                    pypi_0    pypi
+pyrsistent                0.18.0          py310h1a28f6b_0  
+pysocks                   1.7.1           py310hca03da5_0  
+python                    3.10.12         h01493a6_0_cpython    conda-forge
+python-dateutil           2.8.2              pyhd3eb1b0_0  
+python-editor             1.0.4                    pypi_0    pypi
+python-fastjsonschema     2.16.2          py310hca03da5_0  
+python-igraph             0.10.8          py310hade86c1_0    conda-forge
+python-json-logger        2.0.7           py310hca03da5_0  
+python-multipart          0.0.6                    pypi_0    pypi
+python-tzdata             2023.3             pyhd3eb1b0_0  
+python-utils              3.8.1                    pypi_0    pypi
+python_abi                3.10                    3_cp310    conda-forge
+pytorch-lightning         2.0.6                    pypi_0    pypi
+pytz                      2022.7          py310hca03da5_0  
+pyviper                   1.0.0                     dev_0    <develop>
+pyyaml                    6.0             py310h80987f9_1  
+pyzmq                     23.2.0          py310hc377ac9_0  
+readchar                  4.0.5                    pypi_0    pypi
+readline                  8.2                  h1a28f6b_0  
+reproc                    14.2.4               hc377ac9_1  
+reproc-cpp                14.2.4               hc377ac9_1  
+requests                  2.31.0          py310hca03da5_0  
+rfc3339-validator         0.1.4           py310hca03da5_0  
+rfc3986-validator         0.1.1           py310hca03da5_0  
+rich                      13.4.2                   pypi_0    pypi
+rpy2                      3.5.13                   pypi_0    pypi
+rsa                       4.9                      pypi_0    pypi
+ruamel.yaml               0.17.21         py310h1a28f6b_0  
+ruamel.yaml.clib          0.2.6           py310h1a28f6b_1  
+scalapack                 2.2.0                hb170938_1    conda-forge
+scanpy                    1.9.3              pyhd8ed1ab_0    conda-forge
+scikit-learn              1.1.3                    pypi_0    pypi
+scipy                     1.11.1          py310h20cbe94_0  
+scotch                    6.0.9                h7537618_2    conda-forge
+scvelo                    0.3.0                    pypi_0    pypi
+scvi-tools                1.0.2                    pypi_0    pypi
+seaborn                   0.12.2          py310hca03da5_0  
+send2trash                1.8.0              pyhd3eb1b0_1  
+session-info              1.0.0              pyhd8ed1ab_0    conda-forge
+setuptools                68.1.2                   pypi_0    pypi
+simplegeneric             0.8.1                    pypi_0    pypi
+six                       1.12.0                   pypi_0    pypi
+slepc                     3.20.1          real_hadb8a15_100    conda-forge
+slepc4py                  3.20.1          real_h80d6fc9_100    conda-forge
+sniffio                   1.2.0           py310hca03da5_1  
+soupsieve                 2.4             py310hca03da5_0  
+sparse                    0.14.0                   pypi_0    pypi
+squarify                  0.4.3                    pypi_0    pypi
+stack_data                0.2.0              pyhd3eb1b0_0  
+starlette                 0.27.0                   pypi_0    pypi
+starsessions              1.3.0                    pypi_0    pypi
+statsmodels               0.14.0          py310hbda83bc_0  
+stdlib-list               0.8.0           py310hca03da5_0  
+suitesparse               5.10.1               h7cd81ec_1    conda-forge
+superlu                   5.2.2                hc615359_0    conda-forge
+superlu_dist              7.2.0                h7df07b8_0    conda-forge
+sympy                     1.12                     pypi_0    pypi
+synapseclient             2.7.2                    pypi_0    pypi
+tbb                       2021.8.0             h48ca7d4_0  
+tensorstore               0.1.40                   pypi_0    pypi
+terminado                 0.13.3                   pypi_0    pypi
+texttable                 1.6.7              pyhd8ed1ab_0    conda-forge
+threadpoolctl             2.2.0              pyh0d69192_0  
+tinycss2                  1.2.1           py310hca03da5_0  
+tk                        8.6.12               hb8d0fd4_0  
+tomli                     2.0.1           py310hca03da5_0  
+toolz                     0.12.0          py310hca03da5_0  
+torch                     2.0.1                    pypi_0    pypi
+torchmetrics              1.0.1                    pypi_0    pypi
+tornado                   6.3.3                    pypi_0    pypi
+tqdm                      4.65.0          py310h33ce5c2_0  
+traitlets                 5.7.1           py310hca03da5_0  
+truststore                0.8.0              pyhd8ed1ab_0    conda-forge
+typing-extensions         4.7.1           py310hca03da5_0  
+typing_extensions         4.7.1           py310hca03da5_0  
+tzdata                    2023c                h04d1e81_0  
+tzlocal                   5.0.1                    pypi_0    pypi
+umap-learn                0.5.3           py310hca03da5_0  
+uri-template              1.3.0                    pypi_0    pypi
+urllib3                   1.24.3                   pypi_0    pypi
+utils                     1.0.1                    pypi_0    pypi
+uvicorn                   0.23.1                   pypi_0    pypi
+wcwidth                   0.2.5              pyhd3eb1b0_0  
+webcolors                 1.13                     pypi_0    pypi
+webencodings              0.5.1           py310hca03da5_1  
+websocket-client          0.58.0          py310hca03da5_4  
+websockets                11.0.3                   pypi_0    pypi
+wheel                     0.38.4          py310hca03da5_0  
+widgetsnbextension        4.0.5           py310hca03da5_0  
+wrapt                     1.15.0                   pypi_0    pypi
+xarray                    2023.7.0                 pypi_0    pypi
+xz                        5.4.2                h80987f9_0  
+y-py                      0.5.9           py310ha6e5c4f_0  
+yaml                      0.2.5                h1a28f6b_0  
+yaml-cpp                  0.7.0                hc377ac9_1  
+yarl                      1.9.2                    pypi_0    pypi
+ypy-websocket             0.8.2           py310hca03da5_0  
+zeromq                    4.3.4                hc377ac9_0  
+zipp                      3.11.0          py310hca03da5_0  
+zlib                      1.2.13               h53f4e23_5    conda-forge
+zstandard                 0.19.0          py310h80987f9_0  
+zstd                      1.5.5                hd90d995_0  
