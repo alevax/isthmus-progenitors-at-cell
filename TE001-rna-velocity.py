@@ -84,16 +84,17 @@ scv.pl.proportions(adata)
 # and X. Logarithmizing is only applied to X. If X is already preprocessed from former analysis,
 # it will not be touched.
 
+adata.obs.index = adata.obs.index.astype(str)
 scv.pp.filter_genes(adata, min_shared_counts=20)
 scv.pp.normalize_per_cell(adata)
-scv.pp.filter_genes_dispersion(adata, n_top_genes=2000)
+scv.pp.filter_genes_dispersion(adata, n_top_genes=adata.shape[1])
 sc.pp.log1p(adata)
 
 # b.2) Compute first (means) and second order moments (uncentered variances)
 # means: needed for deterministic velocity estimation
 # variances: needed for stochastic velocity estimation 
 
-scv.pp.filter_and_normalize(adata, min_shared_counts=20, n_top_genes=2000)
+scv.pp.filter_and_normalize(adata, min_shared_counts=20, n_top_genes=adata.shape[1])
 scv.pp.moments(adata, n_pcs=30, n_neighbors=30)
 
 

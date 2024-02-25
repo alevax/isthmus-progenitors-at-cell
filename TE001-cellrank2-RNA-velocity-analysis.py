@@ -80,8 +80,9 @@ sc.pl.umap(log_expression,color=["Lgr4","Lgr5"], use_raw=False, cmap='viridis',a
 
 
 ### b) Preprocess the data and UMAP visualization
+adata.obs.index = adata.obs.index.astype(str)
 scv.pp.filter_and_normalize(
-    adata, min_shared_counts=20, n_top_genes=2000, subset_highly_variable=False
+    adata, min_shared_counts=20, n_top_genes=adata.shape[1], subset_highly_variable=False
 )
 sc.tl.pca(adata, random_state=0)
 sc.pp.neighbors(adata,  n_pcs=30, n_neighbors=30, random_state=0)
@@ -112,7 +113,7 @@ print("Working with Velocity kernel")
 vk = cr.kernels.VelocityKernel(adata) # initialize the CellRank2 kernel
 
 # c.2) compute transition probability
-vk.compute_transition_matrix(model="stochastic") # compute transition matrix
+vk.compute_transition_matrix(model="deterministic") # compute transition matrix
 
 figures_dir_Velocity = "/Volumes/ac_lab_scratch/lz2841/ics-rebuttal/figures/CR2_VelocityKernel/"
 
@@ -171,6 +172,16 @@ vk.plot_projection(basis="umap", color="iter_cluster_id_with_paneth",
 sc.pl.embedding(adata, basis="umap", color="terminal_states", add_outline=True)
 #####################
 
+
+# combine with connectivity kernel
+
+ck = cr.kernels.ConnectivityKernel(adata)
+ck.compute_transition_matrix()
+
+combined_kernel = 0.7 * vk + 0.3 * ck
+
+combined_kernel.plot_projection(basis="umap", color="iter_cluster_id_with_paneth", 
+                    legend_loc="right")
 
 ###################
 
